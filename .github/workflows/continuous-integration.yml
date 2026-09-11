@@ -38,10 +38,10 @@ jobs:
         run: mvn -B verify
 
       # -------------------------------------------------------------
-      # PASO: Notificación de Éxito en Slack
+      # Slack success notifications
       # -------------------------------------------------------------
       - name: Notificar éxito a Slack
-        if: success() # Solo se dispara si la compilación y tests fueron exitosos
+        if: success()
         uses: slackapi/slack-github-action@v1.26.0
         with:
           payload: |
@@ -52,10 +52,10 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
       # -------------------------------------------------------------
-      # PASO: Notificación de Fallo en Slack
+      # Slack failure notifications
       # -------------------------------------------------------------
       - name: Notificar fallo a Slack
-        if: failure() # Solo se dispara si falló algún paso anterior
+        if: failure()
         uses: slackapi/slack-github-action@v1.26.0
         with:
           payload: |
