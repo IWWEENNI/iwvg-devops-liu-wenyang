@@ -12,7 +12,7 @@ public class User {
     @Id
     private String id;
     private String firstName;
-    private String secondName;
+    private String familyName;
     private String email;
     private String identity;
     private String address;
@@ -26,11 +26,11 @@ public class User {
     public User() {
     }
 
-    public User(String id, String firstName, String secondName, String email, String identity,
+    public User(String id, String firstName, String familyName, String email, String identity,
                 String address, String city, String province, String postalCode, boolean active, Role role) {
         this.id = id;
         this.firstName = firstName;
-        this.secondName = secondName;
+        this.familyName = familyName;
         this.email = email;
         this.identity = identity;
         this.address = address;
@@ -57,12 +57,12 @@ public class User {
         this.firstName = firstName;
     }
 
-    public String getSecondName() {
-        return secondName;
+    public String getFamilyName() {
+        return familyName;
     }
 
-    public void setSecondName(String secondName) {
-        this.secondName = secondName;
+    public void setFamilyName(String familyName) {
+        this.familyName = familyName;
     }
 
     public String getEmail() {
