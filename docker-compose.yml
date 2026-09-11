@@ -1,10 +1,25 @@
 services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: devops
+      POSTGRES_USER: devops
+      POSTGRES_PASSWORD: devops
+    ports:
+      - "5432:5432"
+    networks:
+      - devopsNet
+
   devops:
     build: .
     image: devops:latest
     restart: always
     ports:
       - "8080:8080"
+    env_file:
+      - .env
+    depends_on:
+      - postgres
     networks:
       - devopsNet
 
