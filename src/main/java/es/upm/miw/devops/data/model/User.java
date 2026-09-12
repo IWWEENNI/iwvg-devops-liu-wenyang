@@ -41,6 +41,16 @@ public class User {
         this.role = role;
     }
 
+    public boolean isBillable() {
+        return hasContent(firstName) && hasContent(secondName) && hasContent(email)
+                && hasContent(identity) && hasContent(address) && hasContent(city)
+                && hasContent(province) && hasContent(postalCode);
+    }
+
+    private boolean hasContent(String value) {
+        return value != null && !value.isBlank();
+    }
+
     public String getId() {
         return id;
     }
