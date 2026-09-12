@@ -1,2 +1,12 @@
 server:
   port: 8080
+
+spring:
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/devops}
+    username: ${DATABASE_USER:devops}
+    password: ${DATABASE_PASSWORD:devops}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
