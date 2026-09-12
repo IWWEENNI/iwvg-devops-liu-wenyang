@@ -32,4 +32,11 @@ public class UserService {
                 .filter(user -> billable == null || user.isBillable() == billable)
                 .toList();
     }
+
+    public void deleteById(String id) {
+        if (!this.userRepository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found: " + id);
+        }
+        this.userRepository.deleteById(id);
+    }
 }

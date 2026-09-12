@@ -25,7 +25,14 @@ public class DatabaseSeeder {
                     "87654321B", "Oak Ave 5", "Barcelona", "Barcelona", "08001", true, Role.CUSTOMER));
             this.userService.create(new User("3", null, null, null,
                     null, null, null, null, null, false, Role.CUSTOMER));
-
+            this.userService.create(new User("4", "Carlos", "Garcia", "carlos@example.com",
+                    "11111111C", "Gran Via 10", "Madrid", "Madrid", "28010", true, Role.CUSTOMER));
+            this.userService.create(new User("5", "Ana", "Lopez", "ana@example.com",
+                    "22222222D", "Paseo de Gracia 50", "Barcelona", "Cataluña", "08007", false, Role.CUSTOMER));
+            this.userService.create(new User("6", "Luis", "Martinez", "luis@example.com",
+                    "33333333E", "Calle Larios 3", "Málaga", "Andalucía", "29005", true, Role.ADMIN));
+            this.userService.create(new User("7", null, "Fernandez", null,
+                    null, null, "Sevilla", "Andalucía", null, false, Role.CUSTOMER));
         }
     }
 }

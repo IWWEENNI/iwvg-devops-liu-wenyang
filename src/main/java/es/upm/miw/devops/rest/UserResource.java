@@ -2,6 +2,8 @@ package es.upm.miw.devops.rest;
 
 import es.upm.miw.devops.data.model.User;
 import es.upm.miw.devops.services.UserService;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,5 +33,11 @@ public class UserResource {
     @GetMapping(USER_ID)
     public User read(@PathVariable String id) {
         return this.userService.findById(id);
+    }
+
+    @DeleteMapping(USER_ID)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable String id) {
+        this.userService.deleteById(id);
     }
 }

@@ -42,7 +42,7 @@ public class User {
     }
 
     public boolean isBillable() {
-        return hasContent(firstName) && hasContent(familyName) && hasContent(email)
+        return hasContent(firstName) && hasContent(secondName) && hasContent(email)
                 && hasContent(identity) && hasContent(address) && hasContent(city)
                 && hasContent(province) && hasContent(postalCode);
     }
