@@ -4,19 +4,15 @@ import es.upm.miw.devops.data.model.User;
 import es.upm.miw.devops.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
 @RequestMapping(UserResource.USER)
 public class UserResource {
-    static final String USER = "/user";
+    public static final String USER = "/user";
     static final String USER_ID = "/{id}";
+    static final String USER_ID_ACTIVE = USER_ID + "/active";
 
     private final UserService userService;
 
@@ -30,9 +26,15 @@ public class UserResource {
                               @RequestParam(required = false) Boolean billable) {
         return this.userService.findAll(role, province, billable);
     }
+
     @GetMapping(USER_ID)
     public User read(@PathVariable String id) {
         return this.userService.findById(id);
+    }
+
+    @PutMapping(USER_ID_ACTIVE)
+    public User activate(@PathVariable String id) {
+        return this.userService.activate(id);
     }
 
     @DeleteMapping(USER_ID)
