@@ -1,4 +1,4 @@
-﻿package es.upm.miw.devops.data.model;
+package es.upm.miw.devops.data.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
