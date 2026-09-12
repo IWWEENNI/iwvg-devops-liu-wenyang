@@ -55,4 +55,25 @@ class UserResourceFT {
                 .exchange()
                 .expectStatus().isNotFound();
     }
+
+    // Feature 4: PUT /user/{id}/active
+
+    @Test
+    void activate_whenExists_returns200AndActiveTrue() {
+        webTestClient.put()
+                .uri(UserResource.USER + "/3/active")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.id").isEqualTo("3")
+                .jsonPath("$.active").isEqualTo(true);
+    }
+
+    @Test
+    void activate_whenNotFound_returns404() {
+        webTestClient.put()
+                .uri(UserResource.USER + "/999/active")
+                .exchange()
+                .expectStatus().isNotFound();
+    }
 }
