@@ -33,6 +33,12 @@ public class UserService {
                 .toList();
     }
 
+    public User activate(String id) {
+        User user = this.findById(id);
+        user.setActive(true);
+        return this.userRepository.save(user);
+    }
+
     public void deleteById(String id) {
         if (!this.userRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found: " + id);
