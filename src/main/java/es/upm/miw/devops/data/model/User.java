@@ -1,4 +1,4 @@
-package es.upm.miw.devops.data.model;
+﻿package es.upm.miw.devops.data.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -42,7 +42,7 @@ public class User {
     }
 
     public boolean isBillable() {
-        return hasContent(firstName) && hasContent(secondName) && hasContent(email)
+        return hasContent(firstName) && hasContent(familyName) && hasContent(email)
                 && hasContent(identity) && hasContent(address) && hasContent(city)
                 && hasContent(province) && hasContent(postalCode);
     }
