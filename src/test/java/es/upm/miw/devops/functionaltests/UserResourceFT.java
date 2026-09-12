@@ -38,6 +38,59 @@ class UserResourceFT {
                 .expectStatus().isNotFound();
     }
 
+    // Feature 2: GET /user con filtros
+
+    @Test
+    void readAll_noFilters_returnsAllUsers() {
+        webTestClient.get()
+                .uri(UserResource.USER)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.length()").value(count ->
+                        org.assertj.core.api.Assertions.assertThat((Integer) count).isGreaterThan(0));
+    }
+
+    @Test
+    void readAll_filterByRole_returnsOnlyAdmins() {
+        webTestClient.get()
+                .uri(UserResource.USER + "?role=ADMIN")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$[0].role").isEqualTo("ADMIN");
+    }
+
+    @Test
+    void readAll_filterByProvince_returnsOnlyMadrid() {
+        webTestClient.get()
+                .uri(UserResource.USER + "?province=Madrid")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$[0].province").isEqualTo("Madrid");
+    }
+
+    @Test
+    void readAll_filterByBillableTrue_returnsBillableUsers() {
+        webTestClient.get()
+                .uri(UserResource.USER + "?billable=true")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$").isArray();
+    }
+
+    @Test
+    void readAll_filterByBillableFalse_returnsNonBillableUsers() {
+        webTestClient.get()
+                .uri(UserResource.USER + "?billable=false")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$").isArray();
+    }
+
     // Feature 3: DELETE /user/{id}
 
     @Test
