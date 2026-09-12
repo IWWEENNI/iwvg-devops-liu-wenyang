@@ -76,4 +76,29 @@ class UserServiceTest {
 
         verify(userRepository, never()).deleteById(any());
     }
+
+    // Feature 4: PUT /user/{id}/active
+
+    @Test
+    void activate_whenExists_setsActiveTrue() {
+        user.setActive(false);
+        when(userRepository.findById("1")).thenReturn(Optional.of(user));
+        when(userRepository.save(user)).thenReturn(user);
+
+        User result = userService.activate("1");
+
+        assertThat(result.isActive()).isTrue();
+        verify(userRepository, times(1)).save(user);
+    }
+
+    @Test
+    void activate_whenNotFound_throws404() {
+        when(userRepository.findById("99")).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> userService.activate("99"))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasMessageContaining("User not found");
+
+        verify(userRepository, never()).save(any());
+    }
 }
