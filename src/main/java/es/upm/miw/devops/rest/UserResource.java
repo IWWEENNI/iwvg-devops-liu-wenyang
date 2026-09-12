@@ -15,7 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping(UserResource.USER)
 public class UserResource {
-    static final String USER = "/user";
+    public static final String USER = "/user";
     static final String USER_ID = "/{id}";
 
     private final UserService userService;
