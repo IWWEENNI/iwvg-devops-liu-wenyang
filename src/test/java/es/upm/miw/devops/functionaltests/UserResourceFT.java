@@ -17,6 +17,29 @@ class UserResourceFT {
     @Autowired
     private WebTestClient webTestClient;
 
+    // Feature 1: GET /user/{id}
+
+    @Test
+    void readById_whenExists_returns200() {
+        webTestClient.get()
+                .uri(UserResource.USER + "/1")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.id").isEqualTo("1")
+                .jsonPath("$.firstName").isEqualTo("John");
+    }
+
+    @Test
+    void readById_whenNotFound_returns404() {
+        webTestClient.get()
+                .uri(UserResource.USER + "/999")
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    // Feature 3: DELETE /user/{id}
+
     @Test
     void delete_whenExists_returns204() {
         webTestClient.delete()
