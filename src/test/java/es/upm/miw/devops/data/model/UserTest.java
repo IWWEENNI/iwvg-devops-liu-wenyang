@@ -96,4 +96,11 @@ class UserTest {
                 "12345678A", "Main St 1", "Madrid", "Madrid", null, true, Role.ADMIN);
         assertThat(user.isBillable()).isFalse();
     }
+
+    @Test
+    void isBillable_whenAllFieldsPresent_returnsTrue() {
+        User user = new User("1", "John", "Doe", "john@example.com",
+                "12345678A", "Main St 1", "Madrid", "Madrid", "28001", true, Role.ADMIN);
+        assertThat(user.isBillable()).isTrue();
+    }
 }

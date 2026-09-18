@@ -56,10 +56,10 @@ class UserServiceTest {
                 .hasMessageContaining("User not found");
     }
 
-    // Feature 2: GET /user con filtros
+    // Feature 2: GET /user
 
     @Test
-    void findAll_noFilters_returnsAll() {
+    void findAll_noFilters_returnsAllUsers() {
         User customer = new User("2", "Jane", "Smith", "jane@example.com",
                 "87654321B", "Oak Ave 5", "Barcelona", "Barcelona", "08001", true, Role.CUSTOMER);
         when(userRepository.findAll()).thenReturn(List.of(user, customer));
@@ -70,51 +70,45 @@ class UserServiceTest {
     }
 
     @Test
-    void findAll_filterByRole_returnsMatching() {
+    void findAll_filterByRole_returnsOnlyMatching() {
         User customer = new User("2", "Jane", "Smith", "jane@example.com",
                 "87654321B", "Oak Ave 5", "Barcelona", "Barcelona", "08001", true, Role.CUSTOMER);
         when(userRepository.findAll()).thenReturn(List.of(user, customer));
 
         List<User> result = userService.findAll("ADMIN", null, null);
 
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0).getRole()).isEqualTo(Role.ADMIN);
+        assertThat(result).hasSize(1).allMatch(u -> u.getRole() == Role.ADMIN);
     }
 
     @Test
-    void findAll_filterByProvince_returnsMatching() {
-        User barcelona = new User("2", "Jane", "Smith", "jane@example.com",
+    void findAll_filterByProvince_returnsOnlyMatching() {
+        User customer = new User("2", "Jane", "Smith", "jane@example.com",
                 "87654321B", "Oak Ave 5", "Barcelona", "Barcelona", "08001", true, Role.CUSTOMER);
-        when(userRepository.findAll()).thenReturn(List.of(user, barcelona));
+        when(userRepository.findAll()).thenReturn(List.of(user, customer));
 
         List<User> result = userService.findAll(null, "Madrid", null);
 
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0).getProvince()).isEqualTo("Madrid");
+        assertThat(result).hasSize(1).allMatch(u -> "Madrid".equalsIgnoreCase(u.getProvince()));
     }
 
     @Test
-    void findAll_filterByBillableTrue_returnsBillableOnly() {
-        User nonBillable = new User("3", null, null, null,
-                null, null, null, null, null, false, Role.CUSTOMER);
-        when(userRepository.findAll()).thenReturn(List.of(user, nonBillable));
+    void findAll_filterByBillableTrue_returnsOnlyBillable() {
+        User incomplete = new User("3", null, null, null, null, null, null, null, null, false, Role.CUSTOMER);
+        when(userRepository.findAll()).thenReturn(List.of(user, incomplete));
 
         List<User> result = userService.findAll(null, null, true);
 
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0).isBillable()).isTrue();
+        assertThat(result).hasSize(1).allMatch(User::isBillable);
     }
 
     @Test
-    void findAll_filterByBillableFalse_returnsNonBillableOnly() {
-        User nonBillable = new User("3", null, null, null,
-                null, null, null, null, null, false, Role.CUSTOMER);
-        when(userRepository.findAll()).thenReturn(List.of(user, nonBillable));
+    void findAll_filterByBillableFalse_returnsOnlyNonBillable() {
+        User incomplete = new User("3", null, null, null, null, null, null, null, null, false, Role.CUSTOMER);
+        when(userRepository.findAll()).thenReturn(List.of(user, incomplete));
 
         List<User> result = userService.findAll(null, null, false);
 
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0).isBillable()).isFalse();
+        assertThat(result).hasSize(1).noneMatch(User::isBillable);
     }
 
     // Feature 3: DELETE /user/{id}
