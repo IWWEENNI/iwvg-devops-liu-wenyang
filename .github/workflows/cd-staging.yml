@@ -9,7 +9,7 @@ env:
 
 jobs:
   cd-staging:
-    name: Build & Push Docker image (staging)
+    name: Build & Push & Deploy on Render (Staging)
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository
@@ -46,11 +46,7 @@ jobs:
             ${{ env.GHCR_URL }}/${{ env.REPOSITORY_LC }}:staging-${{ env.VERSION }}
             ${{ env.GHCR_URL }}/${{ env.REPOSITORY_LC }}:staging
 
-      # 🌐 Render Deployment
-      # 1. En Render: Web Service → Settings → Deploy Hook → copiar el token
-      # 2. En GitHub: Settings → Secrets and variables → Actions → crear secret: RENDER_DEPLOY_HOOK_TOKEN
-      #- name: 🚀 Deploy on Render
-      #  run: |
-      #    curl --fail -X POST "https://api.render.com/deploy/${{ secrets.RENDER_DEPLOY_HOOK_TOKEN }}" \
-      #    && echo "✅ Deployment succeeded" \
-      #   || (echo "❌ Deployment failed" && exit 1)
+      # Render: Web Service -> Settings -> Deploy Hook -> copiar token
+      # GitHub: Settings -> Secrets -> RENDER_DEPLOY_HOOK_TOKEN
+      - name: Deploy on Render (Staging)
+        run: curl --fail -X POST "https://api.render.com/deploy/${{ secrets.RENDER_DEPLOY_HOOK_TOKEN }}"
