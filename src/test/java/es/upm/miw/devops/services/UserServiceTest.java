@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -53,6 +54,61 @@ class UserServiceTest {
         assertThatThrownBy(() -> userService.findById("99"))
                 .isInstanceOf(ResponseStatusException.class)
                 .hasMessageContaining("User not found");
+    }
+
+    // Feature 2: GET /user
+
+    @Test
+    void findAll_noFilters_returnsAllUsers() {
+        User customer = new User("2", "Jane", "Smith", "jane@example.com",
+                "87654321B", "Oak Ave 5", "Barcelona", "Barcelona", "08001", true, Role.CUSTOMER);
+        when(userRepository.findAll()).thenReturn(List.of(user, customer));
+
+        List<User> result = userService.findAll(null, null, null);
+
+        assertThat(result).hasSize(2);
+    }
+
+    @Test
+    void findAll_filterByRole_returnsOnlyMatching() {
+        User customer = new User("2", "Jane", "Smith", "jane@example.com",
+                "87654321B", "Oak Ave 5", "Barcelona", "Barcelona", "08001", true, Role.CUSTOMER);
+        when(userRepository.findAll()).thenReturn(List.of(user, customer));
+
+        List<User> result = userService.findAll("ADMIN", null, null);
+
+        assertThat(result).hasSize(1).allMatch(u -> u.getRole() == Role.ADMIN);
+    }
+
+    @Test
+    void findAll_filterByProvince_returnsOnlyMatching() {
+        User customer = new User("2", "Jane", "Smith", "jane@example.com",
+                "87654321B", "Oak Ave 5", "Barcelona", "Barcelona", "08001", true, Role.CUSTOMER);
+        when(userRepository.findAll()).thenReturn(List.of(user, customer));
+
+        List<User> result = userService.findAll(null, "Madrid", null);
+
+        assertThat(result).hasSize(1).allMatch(u -> "Madrid".equalsIgnoreCase(u.getProvince()));
+    }
+
+    @Test
+    void findAll_filterByBillableTrue_returnsOnlyBillable() {
+        User incomplete = new User("3", null, null, null, null, null, null, null, null, false, Role.CUSTOMER);
+        when(userRepository.findAll()).thenReturn(List.of(user, incomplete));
+
+        List<User> result = userService.findAll(null, null, true);
+
+        assertThat(result).hasSize(1).allMatch(User::isBillable);
+    }
+
+    @Test
+    void findAll_filterByBillableFalse_returnsOnlyNonBillable() {
+        User incomplete = new User("3", null, null, null, null, null, null, null, null, false, Role.CUSTOMER);
+        when(userRepository.findAll()).thenReturn(List.of(user, incomplete));
+
+        List<User> result = userService.findAll(null, null, false);
+
+        assertThat(result).hasSize(1).noneMatch(User::isBillable);
     }
 
     // Feature 3: DELETE /user/{id}

@@ -49,7 +49,9 @@ jobs:
       # Render: Web Service -> Settings -> Deploy Hook -> copiar token
       # GitHub: Settings -> Secrets -> RENDER_DEPLOY_HOOK_TOKEN
       - name: Deploy on Render (Staging)
+        env:
+          DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_TOKEN }}
         run: |
-          curl --fail -X POST "${{ secrets.RENDER_DEPLOY_HOOK_TOKEN }}" \
+          curl --fail -X POST "$DEPLOY_HOOK" \
             && echo "✅ Deployment triggered successfully" \
             || (echo "❌ Deployment failed" && exit 1)
