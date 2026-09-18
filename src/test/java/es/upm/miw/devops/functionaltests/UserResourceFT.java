@@ -1,6 +1,7 @@
 package es.upm.miw.devops.functionaltests;
 
 import es.upm.miw.devops.rest.UserResource;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -36,6 +37,58 @@ class UserResourceFT {
                 .uri(UserResource.USER + "/999")
                 .exchange()
                 .expectStatus().isNotFound();
+    }
+
+    // Feature 2: GET /user
+
+    @Test
+    void readAll_noFilters_returnsAllUsers() {
+        webTestClient.get()
+                .uri(UserResource.USER)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.length()").value(count -> assertThat((Integer) count).isGreaterThan(0));
+    }
+
+    @Test
+    void readAll_filterByRole_returnsOnlyMatching() {
+        webTestClient.get()
+                .uri(UserResource.USER + "?role=ADMIN")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$[0].role").isEqualTo("ADMIN");
+    }
+
+    @Test
+    void readAll_filterByProvince_returnsOnlyMatching() {
+        webTestClient.get()
+                .uri(UserResource.USER + "?province=Madrid")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$[0].province").isEqualTo("Madrid");
+    }
+
+    @Test
+    void readAll_filterByBillableTrue_returnsOnlyBillable() {
+        webTestClient.get()
+                .uri(UserResource.USER + "?billable=true")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.length()").value(count -> assertThat((Integer) count).isGreaterThan(0));
+    }
+
+    @Test
+    void readAll_filterByBillableFalse_returnsNonBillable() {
+        webTestClient.get()
+                .uri(UserResource.USER + "?billable=false")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.length()").value(count -> assertThat((Integer) count).isGreaterThan(0));
     }
 
     // Feature 3: DELETE /user/{id}
