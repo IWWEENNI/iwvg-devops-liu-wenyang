@@ -33,6 +33,20 @@ public class UserService {
                 .toList();
     }
 
+    public User update(String id, User update) {
+        User user = this.findById(id);
+        user.setFirstName(update.getFirstName());
+        user.setFamilyName(update.getFamilyName());
+        user.setEmail(update.getEmail());
+        user.setIdentity(update.getIdentity());
+        user.setAddress(update.getAddress());
+        user.setCity(update.getCity());
+        user.setProvince(update.getProvince());
+        user.setPostalCode(update.getPostalCode());
+        user.setRole(update.getRole());
+        return this.userRepository.save(user);
+    }
+
     public User activate(String id) {
         User user = this.findById(id);
         user.setActive(true);

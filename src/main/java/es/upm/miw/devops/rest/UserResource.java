@@ -32,6 +32,11 @@ public class UserResource {
         return this.userService.findById(id);
     }
 
+    @PutMapping(USER_ID)
+    public User update(@PathVariable String id, @RequestBody User user) {
+        return this.userService.update(id, user);
+    }
+
     @PutMapping(USER_ID_ACTIVE)
     public User activate(@PathVariable String id) {
         return this.userService.activate(id);
