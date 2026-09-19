@@ -14,6 +14,7 @@
 [![CD Master](https://github.com/IWWEENNI/iwvg-devops-liu-wenyang/actions/workflows/cd-master.yml/badge.svg)](https://github.com/IWWEENNI/iwvg-devops-liu-wenyang/actions/workflows/cd-master.yml)
 [![Quality gate status](https://sonarcloud.io/api/project_badges/measure?project=iwweenni_iwvg-devops-liu-wenyang&metric=alert_status&token=65a1def3da5a92cf0560710d035176d4ced9953f)](https://sonarcloud.io/summary/new_code?id=iwweenni_iwvg-devops-liu-wenyang)
 [![Render broken](https://iwvg-devops-liu-wenyang.onrender.com/version-badge)](https://iwvg-devops-liu-wenyang.onrender.com/swagger-ui.html)
+[![AWS](http://35.181.160.113:8080/version-badge)](http://35.181.160.113:8080/swagger-ui.html)
 
 
 ### Tecnologías necesarias
@@ -123,6 +124,3 @@ Indicar como texto en la subida la **URL de GitHub**
 
 Ejemplo resuelto:
 ![](./docs/miw-iwvg-devops-demo.png)
-
-
-
