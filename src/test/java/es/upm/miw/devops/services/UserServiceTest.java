@@ -3,6 +3,7 @@ package es.upm.miw.devops.services;
 import es.upm.miw.devops.data.UserRepository;
 import es.upm.miw.devops.data.model.Role;
 import es.upm.miw.devops.data.model.User;
+import es.upm.miw.devops.rest.dtos.UserDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -109,6 +110,47 @@ class UserServiceTest {
         List<User> result = userService.findAll(null, null, false);
 
         assertThat(result).hasSize(1).noneMatch(User::isBillable);
+    }
+
+    @Test
+    void findAll_filterByRole_whenUserHasNullRole_excludesUser() {
+        User nullRoleUser = new User("5", "Test", "User", "test@example.com",
+                "11111111A", "Street 1", "City", "Province", "11111", true, null);
+        when(userRepository.findAll()).thenReturn(List.of(user, nullRoleUser));
+
+        List<User> result = userService.findAll("ADMIN", null, null);
+
+        assertThat(result).hasSize(1).allMatch(u -> u.getRole() == Role.ADMIN);
+    }
+
+    // Feature 6.1: PUT /user/{id}
+
+    @Test
+    void update_whenExists_updatesAllFieldsAndSaves() {
+        when(userRepository.findById("1")).thenReturn(Optional.of(user));
+        when(userRepository.save(user)).thenReturn(user);
+
+        UserDto dto = new UserDto("Updated", "Name", "updated@example.com",
+                "99999999Z", "New Street 1", "Seville", "Andalucía", "41001", Role.CUSTOMER);
+
+        User result = userService.update("1", dto);
+
+        assertThat(result.getFirstName()).isEqualTo("Updated");
+        assertThat(result.getEmail()).isEqualTo("updated@example.com");
+        assertThat(result.getRole()).isEqualTo(Role.CUSTOMER);
+        verify(userRepository, times(1)).save(user);
+    }
+
+    @Test
+    void update_whenNotFound_throws404() {
+        when(userRepository.findById("99")).thenReturn(Optional.empty());
+
+        UserDto dto = new UserDto(null, null, null, null, null, null, null, null, null);
+        assertThatThrownBy(() -> userService.update("99", dto))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasMessageContaining("User not found");
+
+        verify(userRepository, never()).save(any());
     }
 
     // Feature 3: DELETE /user/{id}
