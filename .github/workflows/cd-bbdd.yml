@@ -17,11 +17,11 @@ jobs:
           key: ${{ secrets.AWS_LIGHTSAIL_SSH_KEY_MAIN }}
           envs: DATABASE_USER,DATABASE_PASSWORD
           script: |
-            docker network create devops 2>/dev/null || true
-            docker pull postgres:16
-            docker stop postgres || true
-            docker rm postgres || true
-            docker run -d \
+            sudo docker network create devops 2>/dev/null || true
+            sudo docker pull postgres:16
+            sudo docker stop postgres || true
+            sudo docker rm postgres || true
+            sudo docker run -d \
               --name postgres \
               --restart unless-stopped \
               --network devops \
