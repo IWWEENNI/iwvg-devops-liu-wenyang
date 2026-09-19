@@ -36,15 +36,15 @@ public class UserService {
 
     public User update(String id, UserDto dto) {
         User user = this.findById(id);
-        user.setFirstName(dto.getFirstName());
-        user.setFamilyName(dto.getFamilyName());
-        user.setEmail(dto.getEmail());
-        user.setIdentity(dto.getIdentity());
-        user.setAddress(dto.getAddress());
-        user.setCity(dto.getCity());
-        user.setProvince(dto.getProvince());
-        user.setPostalCode(dto.getPostalCode());
-        user.setRole(dto.getRole());
+        user.setFirstName(dto.firstName());
+        user.setFamilyName(dto.familyName());
+        user.setEmail(dto.email());
+        user.setIdentity(dto.identity());
+        user.setAddress(dto.address());
+        user.setCity(dto.city());
+        user.setProvince(dto.province());
+        user.setPostalCode(dto.postalCode());
+        user.setRole(dto.role());
         return this.userRepository.save(user);
     }
 
