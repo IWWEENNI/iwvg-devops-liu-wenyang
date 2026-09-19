@@ -1,56 +1,93 @@
 name: CD Master
 on:
-  push:
-    branches: ['master']
-
-env:
-  REPOSITORY: ${{ github.repository }}
-  GHCR_URL: ghcr.io
+    push:
+      branches: ['master']
 
 jobs:
   cd-master:
-    name: Build & Push Docker image (master)
+    name: Build & Push GitHub Package & Deploy on AWS Lightsail
     runs-on: ubuntu-22.04
+
     steps:
-      - name: Checkout repository
+      - name: ⬇️ Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Set up Java
+      - name: ☕ Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 21
           cache: maven
 
-      - name: Extract artifact from pom
+      - name: 🏷️ Prepare container image metadata (repository in lowercase, artifact, version...)
         run: |
-          echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+          echo "REPOSITORY=${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
           echo "ARTIFACT=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" >> $GITHUB_ENV
-          echo "REPOSITORY_LC=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+          echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
 
-      - name: Login to GitHub Container Registry
+      - name: 📦 Login to GitHub Container Registry
         uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
         with:
-          registry: ${{ env.GHCR_URL }}
+          registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GHCR_PERSONAL_ACCESS_TOKEN }}
 
-      - name: Build & Push Docker image
+      - name: 🐳 Build & Push Docker image
         uses: docker/build-push-action@0a97817b6ade9f46837855d676c4cca3a2471fc9 # v4.2.1
         with:
           context: .
           push: true
           tags: |
-            ${{ env.GHCR_URL }}/${{ env.REPOSITORY_LC }}:${{ env.VERSION }}
-            ${{ env.GHCR_URL }}/${{ env.REPOSITORY_LC }}:latest
+            ghcr.io/${{ env.REPOSITORY }}:${{ env.VERSION }}
+            ghcr.io/${{ env.REPOSITORY }}:latest
 
-      # 🌐 Render Deployment
-      # 1. En Render: Web Service → Settings → Deploy Hook → copiar el token
-      # 2. En GitHub: Settings → Secrets and variables → Actions → crear secret: RENDER_DEPLOY_HOOK_TOKEN
-      #- name: 🚀 Deploy on Render
-      #  run: |
-      #    curl --fail -X POST "https://api.render.com/deploy/${{ secrets.RENDER_DEPLOY_HOOK_TOKEN }}" \
-      #    && echo "✅ Deployment succeeded" \
-      #   || (echo "❌ Deployment failed" && exit 1)
+      - name: 🚀 Deploy on AWS Lightsail
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1.2.5
+        with:
+          host: ${{ secrets.AWS_LIGHTSAIL_IP_MAIN }}
+          username: ${{ secrets.AWS_LIGHTSAIL_USER_MAIN }}
+          key: ${{ secrets.AWS_LIGHTSAIL_SSH_KEY_MAIN }}
+          envs: GHCR_TOKEN,GHCR_ACTOR,REPOSITORY,ARTIFACT,DATABASE_URL,DATABASE_USER,DATABASE_PASSWORD
+          script: |
+            echo $GHCR_TOKEN | docker login ghcr.io -u $GHCR_ACTOR --password-stdin
+            docker network create devops 2>/dev/null || true
+
+            docker pull ghcr.io/$REPOSITORY:latest
+            docker rm -f $ARTIFACT || true
+            docker run -d \
+              --name $ARTIFACT \
+              --restart always \
+              --memory 512m \
+              --memory-swap 1024m \
+              --network devops \
+              -p 8080:8080 \
+              -e SPRING_PROFILES_ACTIVE=prod \
+              -e DATABASE_URL="$DATABASE_URL" \
+              -e DATABASE_USER="$DATABASE_USER" \
+              -e DATABASE_PASSWORD="$DATABASE_PASSWORD" \
+              ghcr.io/$REPOSITORY:latest
+
+            echo "⏳ Esperando a que se levante..."
+            for i in $(seq 1 6); do
+              sleep 15
+              STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/actuator/health 2>/dev/null || echo "000")
+              echo "Intento $i: HTTP $STATUS"
+              [ "$STATUS" = "200" ] && break
+            done
+
+            if [ "$STATUS" != "200" ]; then
+              echo "❌ Deploy fallido"
+              docker logs --tail 50 $ARTIFACT
+              exit 1
+            fi
+
+            echo "✅ Deploy exitoso"
+            docker image prune --filter "until=12h" -f
+        env:
+          GHCR_TOKEN: ${{ secrets.GHCR_PERSONAL_ACCESS_TOKEN }}
+          GHCR_ACTOR: ${{ github.actor }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_USER: ${{ secrets.DATABASE_USER }}
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}

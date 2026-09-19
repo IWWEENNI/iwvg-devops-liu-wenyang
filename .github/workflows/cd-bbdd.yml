@@ -1,0 +1,37 @@
+name: CD Database
+
+on:
+  push:
+    branches: ['master']
+
+jobs:
+  cd-bbdd:
+    name: Deploy PostgreSQL on AWS Lightsail
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Deploy PostgreSQL via SSH
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1.2.5
+        with:
+          host: ${{ secrets.AWS_LIGHTSAIL_IP_MAIN }}
+          username: ${{ secrets.AWS_LIGHTSAIL_USER_MAIN }}
+          key: ${{ secrets.AWS_LIGHTSAIL_SSH_KEY_MAIN }}
+          envs: DATABASE_USER,DATABASE_PASSWORD
+          script: |
+            docker network create devops 2>/dev/null || true
+            docker pull postgres:16
+            docker stop postgres || true
+            docker rm postgres || true
+            docker run -d \
+              --name postgres \
+              --restart unless-stopped \
+              --network devops \
+              -p 5432:5432 \
+              -e POSTGRES_DB=devops \
+              -e POSTGRES_USER=$DATABASE_USER \
+              -e POSTGRES_PASSWORD=$DATABASE_PASSWORD \
+              -v postgres-data:/var/lib/postgresql/data \
+              postgres:16
+            echo "✅ PostgreSQL arrancado correctamente"
+        env:
+          DATABASE_USER: ${{ secrets.DATABASE_USER }}
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
