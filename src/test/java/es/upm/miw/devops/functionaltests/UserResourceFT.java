@@ -1,6 +1,7 @@
 package es.upm.miw.devops.functionaltests;
 
 import es.upm.miw.devops.rest.UserResource;
+import es.upm.miw.devops.rest.dtos.UserDto;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,6 +90,35 @@ class UserResourceFT {
                 .expectStatus().isOk()
                 .expectBody()
                 .jsonPath("$.length()").value(count -> assertThat((Integer) count).isGreaterThan(0));
+    }
+
+    // Feature 6.1: PUT /user/{id}
+
+    @Test
+    void update_whenExists_returns200WithUpdatedData() {
+        UserDto dto = new UserDto("Updated", "User", "updated@example.com",
+                "55555555Z", "New Street 5", "Valencia", "Comunitat Valenciana", "46001", null);
+
+        webTestClient.put()
+                .uri(UserResource.USER + "/5")
+                .bodyValue(dto)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.id").isEqualTo("5")
+                .jsonPath("$.firstName").isEqualTo("Updated")
+                .jsonPath("$.email").isEqualTo("updated@example.com");
+    }
+
+    @Test
+    void update_whenNotFound_returns404() {
+        UserDto dto = new UserDto("Ghost", null, null, null, null, null, null, null, null);
+
+        webTestClient.put()
+                .uri(UserResource.USER + "/999")
+                .bodyValue(dto)
+                .exchange()
+                .expectStatus().isNotFound();
     }
 
     // Feature 3: DELETE /user/{id}
