@@ -1,6 +1,7 @@
 package es.upm.miw.devops.rest;
 
 import es.upm.miw.devops.data.model.User;
+import es.upm.miw.devops.rest.dtos.UserActiveDto;
 import es.upm.miw.devops.rest.dtos.UserDto;
 import es.upm.miw.devops.services.UserService;
 import org.springframework.http.HttpStatus;
@@ -41,6 +42,11 @@ public class UserResource {
     @PutMapping(USER_ID_ACTIVE)
     public User activate(@PathVariable String id) {
         return this.userService.activate(id);
+    }
+
+    @PatchMapping
+    public void updateActive(@RequestBody List<UserActiveDto> users) {
+        this.userService.updateActive(users);
     }
 
     @DeleteMapping(USER_ID)
