@@ -1,6 +1,7 @@
 package es.upm.miw.devops.rest;
 
 import es.upm.miw.devops.data.model.User;
+import es.upm.miw.devops.rest.dtos.UserDto;
 import es.upm.miw.devops.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -33,8 +34,8 @@ public class UserResource {
     }
 
     @PutMapping(USER_ID)
-    public User update(@PathVariable String id, @RequestBody User user) {
-        return this.userService.update(id, user);
+    public User update(@PathVariable String id, @RequestBody UserDto userDto) {
+        return this.userService.update(id, userDto);
     }
 
     @PutMapping(USER_ID_ACTIVE)
