@@ -2,6 +2,7 @@ package es.upm.miw.devops.services;
 
 import es.upm.miw.devops.data.UserRepository;
 import es.upm.miw.devops.data.model.User;
+import es.upm.miw.devops.rest.dtos.UserActiveDto;
 import es.upm.miw.devops.rest.dtos.UserDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -46,6 +47,14 @@ public class UserService {
         user.setPostalCode(dto.postalCode());
         user.setRole(dto.role());
         return this.userRepository.save(user);
+    }
+
+    public void updateActive(List<UserActiveDto> updates) {
+        updates.forEach(patch -> {
+            User user = this.findById(patch.id());
+            user.setActive(patch.active());
+            this.userRepository.save(user);
+        });
     }
 
     public User activate(String id) {
