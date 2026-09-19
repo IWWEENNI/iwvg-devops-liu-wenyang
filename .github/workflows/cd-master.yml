@@ -51,12 +51,12 @@ jobs:
           key: ${{ secrets.AWS_LIGHTSAIL_SSH_KEY_MAIN }}
           envs: GHCR_TOKEN,GHCR_ACTOR,REPOSITORY,ARTIFACT,DATABASE_URL,DATABASE_USER,DATABASE_PASSWORD
           script: |
-            echo $GHCR_TOKEN | docker login ghcr.io -u $GHCR_ACTOR --password-stdin
-            docker network create devops 2>/dev/null || true
+            echo $GHCR_TOKEN | sudo docker login ghcr.io -u $GHCR_ACTOR --password-stdin
+            sudo docker network create devops 2>/dev/null || true
 
-            docker pull ghcr.io/$REPOSITORY:latest
-            docker rm -f $ARTIFACT || true
-            docker run -d \
+            sudo docker pull ghcr.io/$REPOSITORY:latest
+            sudo docker rm -f $ARTIFACT || true
+            sudo docker run -d \
               --name $ARTIFACT \
               --restart always \
               --memory 512m \
@@ -79,12 +79,12 @@ jobs:
 
             if [ "$STATUS" != "200" ]; then
               echo "❌ Deploy fallido"
-              docker logs --tail 50 $ARTIFACT
+              sudo docker logs --tail 50 $ARTIFACT
               exit 1
             fi
 
             echo "✅ Deploy exitoso"
-            docker image prune --filter "until=12h" -f
+            sudo docker image prune --filter "until=12h" -f
         env:
           GHCR_TOKEN: ${{ secrets.GHCR_PERSONAL_ACCESS_TOKEN }}
           GHCR_ACTOR: ${{ github.actor }}
