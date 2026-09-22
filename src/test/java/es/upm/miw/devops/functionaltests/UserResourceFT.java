@@ -1,7 +1,9 @@
 package es.upm.miw.devops.functionaltests;
 
 import es.upm.miw.devops.rest.UserResource;
+import es.upm.miw.devops.rest.dtos.UserActiveDto;
 import es.upm.miw.devops.rest.dtos.UserDto;
+import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,6 +119,32 @@ class UserResourceFT {
         webTestClient.put()
                 .uri(UserResource.USER + "/999")
                 .bodyValue(dto)
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    // Feature 6.2: PATCH /user
+
+    @Test
+    void updateActive_whenAllExist_returns200() {
+        webTestClient.patch()
+                .uri(UserResource.USER)
+                .bodyValue(List.of(
+                        new UserActiveDto("5", true),
+                        new UserActiveDto("7", true)
+                ))
+                .exchange()
+                .expectStatus().isOk();
+    }
+
+    @Test
+    void updateActive_whenOneNotFound_returns404() {
+        webTestClient.patch()
+                .uri(UserResource.USER)
+                .bodyValue(List.of(
+                        new UserActiveDto("6", false),
+                        new UserActiveDto("999", true)
+                ))
                 .exchange()
                 .expectStatus().isNotFound();
     }
