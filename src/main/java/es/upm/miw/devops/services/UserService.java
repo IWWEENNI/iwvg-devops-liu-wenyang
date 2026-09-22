@@ -1,6 +1,7 @@
 package es.upm.miw.devops.services;
 
 import es.upm.miw.devops.data.UserRepository;
+import es.upm.miw.devops.data.model.Role;
 import es.upm.miw.devops.data.model.User;
 import es.upm.miw.devops.rest.dtos.UserActiveDto;
 import es.upm.miw.devops.rest.dtos.UserDto;
@@ -52,6 +53,10 @@ public class UserService {
     public void updateActive(List<UserActiveDto> updates) {
         updates.forEach(patch -> {
             User user = this.findById(patch.id());
+            if (!patch.active() && Role.ADMIN.equals(user.getRole())) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                        "Cannot deactivate an ADMIN user: " + patch.id());
+            }
             user.setActive(patch.active());
             this.userRepository.save(user);
         });
