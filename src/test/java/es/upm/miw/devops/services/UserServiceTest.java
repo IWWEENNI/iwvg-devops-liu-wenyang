@@ -3,6 +3,7 @@ package es.upm.miw.devops.services;
 import es.upm.miw.devops.data.UserRepository;
 import es.upm.miw.devops.data.model.Role;
 import es.upm.miw.devops.data.model.User;
+import es.upm.miw.devops.rest.dtos.UserActiveDto;
 import es.upm.miw.devops.rest.dtos.UserDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -173,6 +174,39 @@ class UserServiceTest {
                 .hasMessageContaining("User not found");
 
         verify(userRepository, never()).deleteById(any());
+    }
+
+    // Feature 6.2: PATCH /user
+
+    @Test
+    void updateActive_whenAllExist_updatesActiveForEach() {
+        User user2 = new User("2", "Jane", "Smith", "jane@example.com",
+                "87654321B", "Oak Ave 5", "Barcelona", "Barcelona", "08001", true, Role.CUSTOMER);
+        when(userRepository.findById("1")).thenReturn(Optional.of(user));
+        when(userRepository.findById("2")).thenReturn(Optional.of(user2));
+        when(userRepository.save(any(User.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        userService.updateActive(List.of(
+                new UserActiveDto("1", false),
+                new UserActiveDto("2", false)
+        ));
+
+        assertThat(user.isActive()).isFalse();
+        assertThat(user2.isActive()).isFalse();
+        verify(userRepository, times(2)).save(any(User.class));
+    }
+
+    @Test
+    void updateActive_whenOneNotFound_throws404() {
+        when(userRepository.findById("1")).thenReturn(Optional.of(user));
+        when(userRepository.findById("99")).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> userService.updateActive(List.of(
+                new UserActiveDto("1", false),
+                new UserActiveDto("99", true)
+        )))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasMessageContaining("User not found");
     }
 
     // Feature 4: PUT /user/{id}/active
