@@ -187,11 +187,11 @@ class UserServiceTest {
         when(userRepository.save(any(User.class))).thenAnswer(inv -> inv.getArgument(0));
 
         userService.updateActive(List.of(
-                new UserActiveDto("1", false),
+                new UserActiveDto("1", true),
                 new UserActiveDto("2", false)
         ));
 
-        assertThat(user.isActive()).isFalse();
+        assertThat(user.isActive()).isTrue();
         assertThat(user2.isActive()).isFalse();
         verify(userRepository, times(2)).save(any(User.class));
     }
@@ -202,11 +202,22 @@ class UserServiceTest {
         when(userRepository.findById("99")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> userService.updateActive(List.of(
-                new UserActiveDto("1", false),
+                new UserActiveDto("1", true),
                 new UserActiveDto("99", true)
         )))
                 .isInstanceOf(ResponseStatusException.class)
                 .hasMessageContaining("User not found");
+    }
+
+    @Test
+    void updateActive_whenAdminDeactivated_throws403() {
+        when(userRepository.findById("1")).thenReturn(Optional.of(user));
+
+        assertThatThrownBy(() -> userService.updateActive(List.of(
+                new UserActiveDto("1", false)
+        )))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasMessageContaining("Cannot deactivate an ADMIN user");
     }
 
     // Feature 4: PUT /user/{id}/active
