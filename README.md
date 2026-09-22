@@ -2,12 +2,12 @@
 ## Ingeniería Web: Visión General (IWVG) DevOps
 > Este proyecto es un apoyo docente de la asignatura. Cada release liberada corresponde al código utilizado en clase del curso indicado
 
-[![GitHub](https://img.shields.io/github/license/miw-upm/iwvg-devops?color=informational)](https://github.com/miw-upm/iwvg-devops/blob/develop/LICENSE.md)
-[![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/miw-upm/iwvg-devops?color=informational)](https://github.com/miw-upm/iwvg-devops/releases)
-![GitHub Release Date](https://img.shields.io/github/release-date/miw-upm/iwvg-devops?color=informational)
-![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/miw-upm/iwvg-devops)
-![GitHub issues](https://img.shields.io/github/issues/miw-upm/iwvg-devops?color=important)
-![GitHub closed issues](https://img.shields.io/github/issues-closed/miw-upm/iwvg-devops?color=informational)
+[![GitHub](https://img.shields.io/github/license/IWWEENNI/iwvg-devops-liu-wenyang?color=informational)](https://github.com/IWWEENNI/iwvg-devops-liu-wenyang/blob/develop/LICENSE.md)
+[![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/IWWEENNI/iwvg-devops-liu-wenyang?include_prereleases&color=informational)](https://github.com/IWWEENNI/iwvg-devops-liu-wenyang/releases)
+![GitHub Release Date](https://img.shields.io/github/release-date-pre/IWWEENNI/iwvg-devops-liu-wenyang?color=informational)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/IWWEENNI/iwvg-devops-liu-wenyang)
+![GitHub issues](https://img.shields.io/github/issues/IWWEENNI/iwvg-devops-liu-wenyang?color=important)
+![GitHub closed issues](https://img.shields.io/github/issues-closed/IWWEENNI/iwvg-devops-liu-wenyang?color=informational)
 
 ### Estado del código
 [![DevOps](https://github.com/IWWEENNI/iwvg-devops-liu-wenyang/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/IWWEENNI/iwvg-devops-liu-wenyang/actions/workflows/continuous-integration.yml)
